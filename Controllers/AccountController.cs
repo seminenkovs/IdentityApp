@@ -27,7 +27,7 @@ namespace IdentityApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel logingViewModel, string? returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel logingViewModel, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -40,9 +40,11 @@ namespace IdentityApp.Controllers
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return View();
+                    return View(logingViewModel);
                 }
             }
+
+            return View(logingViewModel);
         }
 
         [HttpGet]
@@ -72,6 +74,14 @@ namespace IdentityApp.Controllers
 
             return View(registerViewModel);
 
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LogOff()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

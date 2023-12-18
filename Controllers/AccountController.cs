@@ -25,6 +25,26 @@ namespace IdentityApp.Controllers
             return View(loginViewModel);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel logingViewModel, string? returnUrl = null)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _signInManager.PasswordSignInAsync(logingViewModel.Email, logingViewModel.Password,
+                    logingViewModel.RememberMe, lockoutOnFailure: false);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return View();
+                }
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> Register(string? returnUrl = null)
         {

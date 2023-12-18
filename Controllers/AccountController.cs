@@ -22,6 +22,12 @@ namespace IdentityApp.Controllers
         }
 
         [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Register(string? returnUrl = null)
         {
             RegisterViewModel registerViewModel = new RegisterViewModel();

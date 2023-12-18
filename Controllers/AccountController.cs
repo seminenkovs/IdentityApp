@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using IdentityApp.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityApp.Controllers
@@ -21,7 +22,9 @@ namespace IdentityApp.Controllers
 
         public async Task<IActionResult> Register(string returnUrl = null)
         {
-            RegisterViewModel
+            RegisterViewModel registerViewModel = new RegisterViewModel();
+            registerViewModel.ReturnUrl = returnUrl;
+            return View(registerViewModel);
         }
     }
 }

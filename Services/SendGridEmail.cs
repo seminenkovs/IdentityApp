@@ -28,7 +28,7 @@ public class SendGridEmail : ISendGridEmail
         await Execute(Options.ApiKey, subject, message, toEmail);
     }
 
-    public async Task Execute(string apiKey, string subject, string messsage, string toEmail)
+    private async Task Execute(string apiKey, string subject, string messsage, string toEmail)
     {
         var client = new SendGridClient(apiKey);
         var msg = new SendGridMessage()

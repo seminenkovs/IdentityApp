@@ -1,4 +1,5 @@
-﻿using IdentityApp.Models;
+﻿using IdentityApp.Interfaces;
+using IdentityApp.Models;
 using IdentityApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +10,14 @@ namespace IdentityApp.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ISendGridEmail _sendGridEmail;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<IdentityUser> userManager, 
+            SignInManager<IdentityUser> signInManager, ISendGridEmail sendGridEmail)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _sendGridEmail = sendGridEmail;
         }
 
 
@@ -47,7 +51,12 @@ namespace IdentityApp.Controllers
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrl = Url.Action("ResetPassword", "Account",
                     new {userId = user.Id, code = code}, protocol: HttpContext.Request.Scheme);
+                await _sendGridEmail.SendEmailAsync(model.Email, "Reset Email Confirmation",
+                    "Please Reset emil by going to this link <a href=\"" + callbackUrl + "\">Link</a>");
+
+                return RedirectToAction("ForgotPasswordConfirmation");
             }
+            return View(model);
         }
 
         [HttpPost]

@@ -34,9 +34,20 @@ namespace IdentityApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult ForgotPassword()
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    return RedirectToAction("ForgotPasswordConfirmation");
+                }
 
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action("ResetPassword", "Account",
+                    new {userId = user.Id, code = code}, protocol: HttpContext.Request.Scheme);
+            }
         }
 
         [HttpPost]

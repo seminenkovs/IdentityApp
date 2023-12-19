@@ -18,6 +18,16 @@ public class SendGridEmail : ISendGridEmail
         Options = options.Value;
     }
 
+    public async Task SendEmailAsync(string toEmail, string subject, string message)
+    {
+        if (string.IsNullOrEmpty(Options.ApiKey))
+        {
+            throw new Exception("Null SendGridKey");
+        }
+
+        await Execute(Options.ApiKey, subject, message, toEmail);
+    }
+
     public async Task Execute(string apiKey, string subject, string messsage, string toEmail)
     {
         var client = new SendGridClient(apiKey);

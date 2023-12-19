@@ -59,6 +59,12 @@ namespace IdentityApp.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult ResetPassword(string code = null)
+        {
+            return code == null ? View("Error") : View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel logingViewModel, string returnUrl)
@@ -113,6 +119,12 @@ namespace IdentityApp.Controllers
 
             return View(registerViewModel);
 
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
         }
 
         [HttpPost]

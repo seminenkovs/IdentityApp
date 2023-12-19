@@ -1,5 +1,9 @@
 using IdentityApp.Data;
+using IdentityApp.Helpers;
+using IdentityApp.Interfaces;
+using IdentityApp.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +14,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(e =>
 builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<ISendGridEmail, SendGridEmail>();
+builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration.GetSection("SendGrid"));
 builder.Services.Configure<IdentityOptions>(opt =>
 {
     opt.Password.RequiredLength = 5;

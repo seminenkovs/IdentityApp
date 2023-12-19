@@ -32,10 +32,15 @@ namespace IdentityApp.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _signInManager.PasswordSignInAsync(logingViewModel.UserName, logingViewModel.Password,
-                    logingViewModel.RememberMe, lockoutOnFailure: false);
+                    logingViewModel.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Index", "Home");
+                }
+
+                if (result.IsLockedOut)
+                {
+                    return View("Lockout");
                 }
                 else
                 {

@@ -25,10 +25,18 @@ namespace IdentityApp.Controllers
             return View(loginViewModel);
         }
 
+     
+
         [HttpGet]
         public IActionResult ForgotPassword()
         {
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult ForgotPassword()
+        {
+
         }
 
         [HttpPost]

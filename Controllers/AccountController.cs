@@ -5,6 +5,7 @@ using IdentityApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace IdentityApp.Controllers
 {
@@ -176,7 +177,7 @@ namespace IdentityApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ExternalLoginCallback(string returnurl = null, string remoteError = null)
+        public async Task<IActionResult> ExternalLoginCallback(string? returnurl = null, string remoteError = null)
         {
             if (remoteError != null)
             {
@@ -202,9 +203,43 @@ namespace IdentityApp.Controllers
             {
                 ViewData["ReturnUrl"] = returnurl;
                 ViewData["DisplayName"] = info.ProviderDisplayName;
-                var email = info.Principal.FindFirstValue(claimType: Email);
-                return View("ExternalLoginConfirmation");
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                return View("ExternalLoginConfirmation", new ExternalLoginViewModel{Email = email});
             }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model, string? returnurl = null)
+        {
+            returnurl = returnurl ?? Url.Content("~/");
+
+            if (ModelState.IsValid)
+            {
+                var info = await _signInManager.GetExternalLoginInfoAsync();
+                if (info == null)
+                {
+                    return View("Error");
+                }
+
+                var user = new AppUser{UserName = model.Name, Email = model.Email};
+                var result = await _userManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    //await _userManager.AddToRoleAsync(user, "User");
+                    result = await _userManager.AddLoginAsync(user, info);
+                    if (result.Succeeded)
+                    {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        await _signInManager.UpdateExternalAuthenticationTokensAsync(info);
+                        return LocalRedirect(returnurl);
+                    }
+                }
+                ModelState.AddModelError("Email", "User already exists");
+            }
+            ViewData["ReturnUrl"] = returnurl;
+            return View(model);
         }
 
     }

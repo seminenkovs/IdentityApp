@@ -95,7 +95,7 @@ namespace IdentityApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(logingViewModel.UserName, logingViewModel.Password,
+                var result = await _signInManager.PasswordSignInAsync(logingViewModel.Email, logingViewModel.Password,
                     logingViewModel.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {

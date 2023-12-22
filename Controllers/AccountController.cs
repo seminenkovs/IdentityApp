@@ -1,4 +1,5 @@
-﻿using IdentityApp.Interfaces;
+﻿using System.Security.Claims;
+using IdentityApp.Interfaces;
 using IdentityApp.Models;
 using IdentityApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -168,7 +169,42 @@ namespace IdentityApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ExternalLogin(string provider, string returnurl = null)
         {
-            return View();
+            var redirect = Url.Action("ExternalLoginCallback", "Account", new{ReturnUrl = returnurl});
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirect);
+
+            return Challenge(properties, provider);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExternalLoginCallback(string returnurl = null, string remoteError = null)
+        {
+            if (remoteError != null)
+            {
+                ModelState.AddModelError(string.Empty, "Error from external provider");
+                return View("Login");
+            }
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            var result =
+                await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
+                    isPersistent: false);
+            if (result.Succeeded)
+            {
+                await _signInManager.UpdateExternalAuthenticationTokensAsync(info);
+                return LocalRedirect(returnurl);
+            }
+            else
+            {
+                ViewData["ReturnUrl"] = returnurl;
+                ViewData["DisplayName"] = info.ProviderDisplayName;
+                var email = info.Principal.FindFirstValue(claimType: Email);
+                return View("ExternalLoginConfirmation");
+            }
         }
 
     }

@@ -1,1 +1,28 @@
-﻿
+﻿@model IdentityApp.ViewModels.ExternalLoginViewModel
+
+<h1>Register</h1>
+<h3>Associate your @ViewData["DislayName"] account.</h3>
+<form asp-controller="Account" asp-action="ExternalLoginConfirmation" method="post" 
+      role="form" asp-route-returnurl="@ViewData["ReturnUrl"]">
+    <h4>Please add additional information to make your account better!</h4>
+    <p>You have successfully authenticated to your @ViewData["DislayName"] account</p>
+    <div class="form-group">
+        <label asp-for="Email" class="col-md-2"></label>
+        <div class="col-md-10">
+            <input asp-for="Email" class="form-control"/>
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Name" class="col-md-2"></label>
+        <div class="col-md-10">
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-success form-control">Log in</button>
+        </div>
+    </div>
+</form>

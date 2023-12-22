@@ -1,6 +1,7 @@
 ﻿using IdentityApp.Interfaces;
 using IdentityApp.Models;
 using IdentityApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +21,6 @@ namespace IdentityApp.Controllers
             _sendGridEmail = sendGridEmail;
         }
 
-
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
@@ -28,8 +28,6 @@ namespace IdentityApp.Controllers
             loginViewModel.ReturnUrl = returnUrl ?? Url.Content("~/");
             return View(loginViewModel);
         }
-
-     
 
         [HttpGet]
         public IActionResult ForgotPassword()
@@ -164,5 +162,14 @@ namespace IdentityApp.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public IActionResult ExternalLogin(string provider, string returnurl = null)
+        {
+            return View();
+        }
+
     }
 }

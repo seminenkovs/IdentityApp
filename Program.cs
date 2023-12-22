@@ -25,8 +25,16 @@ builder.Services.Configure<IdentityOptions>(opt =>
     //opt.SignIn.RequireConfirmedAccount = true;
 });
 builder.Services.AddAuthentication()
-    .AddFacebook()
-    .AddGoogle();
+    .AddFacebook(options =>
+    {
+        options.AppId = "test";
+        options.AppSecret = "test";
+    })
+    .AddGoogle(options =>
+    {
+        options.ClientId = "test";
+        options.ClientSecret = "test";
+    });
 
 var app = builder.Build();
 

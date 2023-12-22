@@ -24,6 +24,9 @@ builder.Services.Configure<IdentityOptions>(opt =>
     opt.Lockout.MaxFailedAccessAttempts = 5;
     //opt.SignIn.RequireConfirmedAccount = true;
 });
+builder.Services.AddAuthentication()
+    .AddFacebook()
+    .AddGoogle();
 
 var app = builder.Build();
 

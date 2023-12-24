@@ -14,13 +14,16 @@ namespace IdentityApp.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ISendGridEmail _sendGridEmail;
+        private readonly RoleManager<IdentityUser> _roleManager;
 
         public AccountController(UserManager<IdentityUser> userManager, 
-            SignInManager<IdentityUser> signInManager, ISendGridEmail sendGridEmail)
+            SignInManager<IdentityUser> signInManager, ISendGridEmail sendGridEmail,
+            RoleManager<IdentityUser> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _sendGridEmail = sendGridEmail;
+            _roleManager = roleManager;
         }
 
         [HttpGet]

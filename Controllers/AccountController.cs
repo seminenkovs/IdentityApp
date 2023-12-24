@@ -5,6 +5,7 @@ using IdentityApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace IdentityApp.Controllers
@@ -127,6 +128,17 @@ namespace IdentityApp.Controllers
                 await _roleManager.CreateAsync(new IdentityRole("Pokemon"));
                 await _roleManager.CreateAsync(new IdentityRole("Trainer"));
             }
+            List<SelectListItem> listItems = new List<SelectListItem>();
+            listItems.Add(new SelectListItem()
+            {
+                Value = "Pokemon",
+                Text = "Pokemon"
+            });
+            listItems.Add(new SelectListItem()
+            {
+                Value = "Trainer",
+                Text = "Trainer"
+            });
             RegisterViewModel registerViewModel = new RegisterViewModel();
             registerViewModel.ReturnUrl = returnUrl;
             return View(registerViewModel);
@@ -143,6 +155,14 @@ namespace IdentityApp.Controllers
                 var result = await _userManager.CreateAsync(user, registerViewModel.Password);
                 if (result.Succeeded)
                 {
+                    if (registerViewModel.RoleSelected != null && registerViewModel.RoleSelected.Length > 0 && registerViewModel.RoleSelected == "Trainer")
+                    {
+                        await _userManager.AddToRolesAsync(user, "Trainer");
+                    }
+                    else
+                    {
+                        await _userManager.AddToRolesAsync(user, "Pokemon");
+                    }
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUtl);
                 }

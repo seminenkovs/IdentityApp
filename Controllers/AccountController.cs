@@ -140,6 +140,7 @@ namespace IdentityApp.Controllers
                 Text = "Trainer"
             });
             RegisterViewModel registerViewModel = new RegisterViewModel();
+            registerViewModel.RoleList = listItems;
             registerViewModel.ReturnUrl = returnUrl;
             return View(registerViewModel);
         }
@@ -157,11 +158,11 @@ namespace IdentityApp.Controllers
                 {
                     if (registerViewModel.RoleSelected != null && registerViewModel.RoleSelected.Length > 0 && registerViewModel.RoleSelected == "Trainer")
                     {
-                        await _userManager.AddToRolesAsync(user, "Trainer");
+                        await _userManager.AddToRoleAsync(user, "Trainer");
                     }
                     else
                     {
-                        await _userManager.AddToRolesAsync(user, "Pokemon");
+                        await _userManager.AddToRoleAsync(user, "Pokemon");
                     }
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUtl);

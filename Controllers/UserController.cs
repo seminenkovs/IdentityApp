@@ -17,7 +17,17 @@ namespace IdentityApp.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var userList = _dbContext.Users.ToList();
+            var roleList = _dbContext.UserRoles.ToList();
+            // set user to "none" to make UI look better
+            foreach (var user in userList)
+            {
+                var role = roleList.FirstOrDefault(r => r.UserId == user.Id);
+                if (role == null)
+                {
+                    user.Role = "None";
+                }
+            }
         }
     }
 }

@@ -101,6 +101,18 @@ namespace IdentityApp.Controllers
             return View(user);
         }
 
+        [HttpPost]
+        public IActionResult Delete(string userId)
+        {
+            var user = _dbContext.AppUser.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
+            _dbContext.AppUser.Remove(user);
+            _dbContext.SaveChanges();
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

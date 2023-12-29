@@ -66,5 +66,25 @@ namespace IdentityApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpDelete]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var roleDb = _dbContext.Roles.FirstOrDefault(r => r.Id == id);
+            if (roleDb == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var userRolesForThisRole = _dbContext.UserRoles.Where(u => u.RoleId == id).Count();
+            if (userRolesForThisRole > 0)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            await _roleManager.DeleteAsync(roleDb);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

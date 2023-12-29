@@ -38,5 +38,33 @@ namespace IdentityApp.Controllers
                 return View(user);
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upsert(IdentityRole role)
+        {
+            if (await _roleManager.RoleExistsAsync(role.Name))
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (string.IsNullOrEmpty(role.Id))
+            {
+                await _roleManager.CreateAsync(new IdentityRole {Name = role.Name});
+            }
+            else
+            {
+                var roleDb = _dbContext.Roles.FirstOrDefault(r => r.Id == role.Id);
+                if (roleDb == null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                roleDb.Name = role.Name;
+                roleDb.NormalizedName = role.Name.ToUpper();
+                var result = await _roleManager.UpdateAsync(roleDb);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

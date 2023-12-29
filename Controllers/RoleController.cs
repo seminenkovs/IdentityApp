@@ -21,7 +21,8 @@ namespace IdentityApp.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var roles = _dbContext.Roles.ToList();
+            return View(roles);
         }
     }
 }

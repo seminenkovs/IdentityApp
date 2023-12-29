@@ -24,5 +24,19 @@ namespace IdentityApp.Controllers
             var roles = _dbContext.Roles.ToList();
             return View(roles);
         }
+
+        [HttpGet]
+        public IActionResult Upsert(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return View();
+            }
+            else
+            {
+                var user = _dbContext.Roles.FirstOrDefault(u => u.Id == id);
+                return View(user);
+            }
+        }
     }
 }

@@ -64,5 +64,43 @@ namespace IdentityApp.Controllers
             return View(user);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(AppUser user)
+        {
+            if (ModelState.IsValid)
+            {
+                var userDbValue = _dbContext.AppUser.FirstOrDefault(u => u.Id == user.Id);
+                if (userDbValue == null)
+                {
+                    return NotFound();
+                }
+
+                var userRole = _dbContext.UserRoles.FirstOrDefault(u => u.UserId == userDbValue.Id);
+                if (userRole != null)
+                {
+                    var previousRoleName = _dbContext.Roles.Where(u => u.Id == userRole.RoleId)
+                        .Select(e => e.Name).FirstOrDefault();
+                    await _userManager.RemoveFromRoleAsync(userDbValue, previousRoleName);
+
+                }
+
+                await _userManager.AddToRoleAsync(userDbValue,
+                    _dbContext.Roles.FirstOrDefault(u => u.Id == user.RoleId).Name);
+
+                _dbContext.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+
+            user.RoleList = _dbContext.Roles.Select(u => new SelectListItem
+            {
+                Text = u.Name,
+                Value = u.Id
+            });
+
+            return View(user);
+        }
+
+
     }
 }

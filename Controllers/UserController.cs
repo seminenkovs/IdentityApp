@@ -1,5 +1,7 @@
-﻿using IdentityApp.Data;
+﻿using System.Security.Claims;
+using IdentityApp.Data;
 using IdentityApp.Models;
+using IdentityApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -130,6 +132,21 @@ namespace IdentityApp.Controllers
             {
                 UserId = userId,
             };
+
+            foreach (Claim claim in ClaimStore.claimList)
+            {
+                UserClaim userClaim = new UserClaim()
+                {
+                    ClaimType = claim.Type
+                };
+                if (existingUserClaim.Any(c => c.Type == claim.Type))
+                {
+                    userClaim.IsSelected = true;
+                }
+                model.Claims.Add(userClaim);
+            }
+
+            return View(model);
         }
     }
 }

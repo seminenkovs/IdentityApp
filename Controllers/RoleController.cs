@@ -67,7 +67,7 @@ namespace IdentityApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpDelete]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string id)
         {
@@ -78,7 +78,7 @@ namespace IdentityApp.Controllers
             }
 
             var userRolesForThisRole = _dbContext.UserRoles.Where(u => u.RoleId == id).Count();
-            if (userRolesForThisRole > 0)
+            if (userRolesForThisRole < 0)
             {
                 return RedirectToAction(nameof(Index));
             }

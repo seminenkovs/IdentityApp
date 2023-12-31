@@ -1,3 +1,4 @@
+using IdentityApp.Authorization;
 using IdentityApp.Data;
 using IdentityApp.Helpers;
 using IdentityApp.Interfaces;
@@ -36,6 +37,13 @@ builder.Services.AddAuthentication()
         options.ClientId = "test";
         options.ClientSecret = "test";
     });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("OnlyBloggerChecker", 
+        policy => policy.Requirements.Add(new OnlyBloggerAuthorization()));
+    options.AddPolicy("CheckNickNameBill", 
+        policy => policy.Requirements.Add(new NicknameRequirement("Bill")));
+});
 
 var app = builder.Build();
 

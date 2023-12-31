@@ -148,5 +148,35 @@ namespace IdentityApp.Controllers
 
             return View(model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ManageClaims(UserClaimsViewModel viewModel)
+        {
+            var user = await _userManager.FindByIdAsync(viewModel.UserId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var userClaim = await _userManager.GetClaimsAsync(user);
+            var result = await _userManager.RemoveClaimsAsync(user, userClaim);
+
+            if (!result.Succeeded)
+            {
+                return View(viewModel);
+            }
+
+            result = await _userManager.AddClaimsAsync(user,
+                viewModel.Claims.Where(u => u.IsSelected)
+                    .Select(c => new Claim(c.ClaimType, c.IsSelected.ToString()))
+                );
+            if (!result.Succeeded)
+            {
+                return View(viewModel);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
